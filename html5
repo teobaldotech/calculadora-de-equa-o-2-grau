@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora 2º Grau</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body { font-family: Arial; padding: 20px; max-width: 800px; margin: auto; }
+  input { width: 60px; margin: 5px; }
+  button { padding: 8px 15px; cursor: pointer; }
+  .box { margin-top: 20px; padding: 10px; background: #f4f4f4; }
+</style>
+</head>
+<body>
+
+<h2>Calculadora de Equação do 2º Grau</h2>
+
+<p>Digite os valores de ax² + bx + c = 0</p>
+
+a: <input type="number" id="a" value="1">
+b: <input type="number" id="b" value="-3">
+c: <input type="number" id="c" value="2">
+
+<button onclick="resolver()">Resolver</button>
+
+<div class="box" id="passos"></div>
+
+<canvas id="grafico" height="200"></canvas>
+
+<script>
+let chart;
+
+function resolver() {
+    let a = parseFloat(document.getElementById("a").value);
+    let b = parseFloat(document.getElementById("b").value);
+    let c = parseFloat(document.getElementById("c").value);
+
+    let delta = b*b - 4*a*c;
+
+    let passos = `<h3>Passo a passo:</h3>`;
+    passos += `1) Δ = b² - 4ac<br>`;
+    passos += `Δ = (${b})² - 4·(${a})·(${c})<br>`;
+    passos += `Δ = ${b*b} - ${4*a*c}<br>`;
+    passos += `<b>Δ = ${delta}</b><br><br>`;
+
+    if (delta < 0) {
+        passos += "Não existem raízes reais.";
+        document.getElementById("passos").innerHTML = passos;
+        return;
+    }
+
+    let x1 = (-b + Math.sqrt(delta)) / (2*a);
+    let x2 = (-b - Math.sqrt(delta)) / (2*a);
+
+    passos += `2) Fórmula de Bhaskara:<br>`;
+    passos += `x = (-b ± √Δ) / 2a<br><br>`;
+
+    passos += `x1 = (${ -b } + √${delta}) / ${2*a} = <b>${x1}</b><br>`;
+    passos += `x2 = (${ -b } - √${delta}) / ${2*a} = <b>${x2}</b><br>`;
+
+    document.getElementById("passos").innerHTML = passos;
+
+    desenharGrafico(a,b,c);
+}
+
+function desenharGrafico(a,b,c) {
+    let pontos = [];
+    for (let x = -10; x <= 10; x += 0.5) {
+        let y = a*x*x + b*x + c;
+        pontos.push({x: x, y: y});
+    }
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("grafico"), {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'f(x) = ax² + bx + c',
+                data: pontos,
+                borderColor: 'blue',
+                showLine: true,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                x: { type: 'linear', position: 'bottom' }
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>
